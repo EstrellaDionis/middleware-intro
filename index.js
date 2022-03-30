@@ -38,6 +38,11 @@ app.get("/dogs", (req, res) => {
   res.send("Hello im woof woof");
 });
 
+//404 route
+app.use((req, res) => {
+  res.status(404).send("NOT FOUND!");
+});
+
 app.listen(9000, () => {
   console.log("App is running on port 9000");
 });
