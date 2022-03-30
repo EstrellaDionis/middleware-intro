@@ -1,3 +1,4 @@
+const { verify } = require("crypto");
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
@@ -19,13 +20,13 @@ app.use("/dogs", (req, res, next) => {
 });
 
 //this makes every endpoint needing the password chickennugget in the query string WHICH WE NEVER WANT TO DO
-app.use((req, res, next) => {
+const verifyPassword = (req, res, next) => {
   const { password } = req.query;
   if (password === "chickennugget") {
     next();
   }
   res.send("SORRY YOU NEED A PASSWORD");
-});
+};
 
 //Check this out in the console to see how next works
 app.use((req, res, next) => {
@@ -53,7 +54,7 @@ app.get("/dogs", (req, res) => {
   res.send("Hello im woof woof");
 });
 
-app.get("/secret", (req, res) => {
+app.get("/secret", verifyPassword, (req, res) => {
   res.send("MY SECRET IS: Sometimes I wear headphones");
 });
 
