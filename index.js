@@ -12,6 +12,21 @@ app.use((req, res, next) => {
   next();
 });
 
+//this will only run if the endpoint attempted to be reached is /dogs
+app.use("/dogs", (req, res, next) => {
+  console.log("I LOVE DOGS");
+  next();
+});
+
+//this makes every endpoint needing the password chickennugget in the query string WHICH WE NEVER WANT TO DO
+app.use((req, res, next) => {
+  const { password } = req.query;
+  if (password === "chickennugget") {
+    next();
+  }
+  res.send("SORRY YOU NEED A PASSWORD");
+});
+
 //Check this out in the console to see how next works
 app.use((req, res, next) => {
   console.log("THIS IS MY FIRST MIDDLEWARE");
@@ -36,6 +51,10 @@ app.get("/", (req, res) => {
 app.get("/dogs", (req, res) => {
   console.log(`REQUEST DATE: ${req.requestTime}`); //this is using req.requestTime function from app.use() which is triggered by all requests and because it loads first, this endpoint is allowed to use it.
   res.send("Hello im woof woof");
+});
+
+app.get("/secret", (req, res) => {
+  res.send("MY SECRET IS: Sometimes I wear headphones");
 });
 
 //404 route
