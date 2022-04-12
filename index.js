@@ -2,6 +2,8 @@ const { verify } = require("crypto");
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const ejsMate = require("ejs-mate");
+const { allowedNodeEnvironmentFlags } = require("process");
 
 //app.use will be triggered by every request!
 app.use(morgan("tiny")); //logger middleware and there are many middlewares to morgan! check docs!
@@ -49,6 +51,10 @@ app.get("/", (req, res) => {
   res.send("Hello im working");
 });
 
+app.get("/error", (req, res) => {
+  chicken.fly();
+});
+
 app.get("/dogs", (req, res) => {
   console.log(`REQUEST DATE: ${req.requestTime}`); //this is using req.requestTime function from app.use() which is triggered by all requests and because it loads first, this endpoint is allowed to use it.
   res.send("Hello im woof woof");
@@ -61,6 +67,13 @@ app.get("/secret", verifyPassword, (req, res) => {
 //404 route
 app.use((req, res) => {
   res.status(404).send("NOT FOUND!");
+});
+
+app.use((err, req, res, next) => {
+  console.log("*******************************");
+  console.log("****************ERROR!**************");
+  console.log("*******************************");
+  next(err); //this is calling next error handling middleware which in this case is express default err handler
 });
 
 app.listen(9000, () => {

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "ejs-mate": "^3.0.0",
     "express": "^4.17.3",
     "morgan": "^1.10.0"
   },
