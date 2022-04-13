@@ -5,6 +5,8 @@ const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const { allowedNodeEnvironmentFlags } = require("process");
 
+const AppError = require("./AppError");
+
 //app.use will be triggered by every request!
 app.use(morgan("tiny")); //logger middleware and there are many middlewares to morgan! check docs!
 
@@ -27,7 +29,7 @@ const verifyPassword = (req, res, next) => {
   if (password === "chickennugget") {
     next();
   }
-  res.send("SORRY YOU NEED A PASSWORD");
+  throw new AppError("password required", 401);
 };
 
 //Check this out in the console to see how next works
@@ -64,16 +66,26 @@ app.get("/secret", verifyPassword, (req, res) => {
   res.send("MY SECRET IS: Sometimes I wear headphones");
 });
 
+app.get("/admin", (req, res) => {
+  throw new AppError("You are not an Admin!", 403);
+});
+
 //404 route
 app.use((req, res) => {
   res.status(404).send("NOT FOUND!");
 });
 
+// app.use((err, req, res, next) => {
+//   console.log("*******************************");
+//   console.log("****************ERROR!**************");
+//   console.log("*******************************");
+//   next(err); //this is calling next error handling middleware which in this case is express default err handler
+// });
+
 app.use((err, req, res, next) => {
-  console.log("*******************************");
-  console.log("****************ERROR!**************");
-  console.log("*******************************");
-  next(err); //this is calling next error handling middleware which in this case is express default err handler
+  //this is just showing that we can handle the error in our own way.
+  const { status = 500, message = "Something went wrong" } = err; //the destructuring is just giving it a default value if no value is given
+  res.status(status).send(message);
 });
 
 app.listen(9000, () => {
